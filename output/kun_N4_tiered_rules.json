@@ -1,0 +1,1146 @@
+{
+  "level": "N4",
+  "total_instances": 1518,
+  "kun_instances": 549,
+  "on_instances": 860,
+  "num_rules": 59,
+  "coverage": {
+    "on_kun": 0.9163372859025033,
+    "word_class": 0.47540983606557374,
+    "specific_stem": 0.17122040072859745
+  },
+  "rules": [
+    {
+      "id": "A3",
+      "type": "A",
+      "description": "多汉字无假名→音读",
+      "predicts": "on",
+      "cost": 1,
+      "accuracy": 0.8253319713993871,
+      "newA": 808,
+      "newB": 0,
+      "newC": 0,
+      "cum_A": 808,
+      "cum_B": 0,
+      "cum_C": 0,
+      "samples": [
+        "愛犬.愛",
+        "愛犬.犬",
+        "挨拶.挨",
+        "挨拶.拶",
+        "青空.青"
+      ]
+    },
+    {
+      "id": "B5",
+      "type": "B",
+      "description": "送假名=る→动词",
+      "predicts": "verb",
+      "cost": 1,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 121,
+      "newC": 0,
+      "cum_A": 808,
+      "cum_B": 121,
+      "cum_C": 0,
+      "samples": [
+        "上る.上",
+        "挙げる.挙",
+        "与える.与",
+        "温める/暖める.温",
+        "当たる.当"
+      ]
+    },
+    {
+      "id": "A1",
+      "type": "A",
+      "description": "有送假名→训读",
+      "predicts": "kun",
+      "cost": 1,
+      "accuracy": 0.8683544303797468,
+      "newA": 343,
+      "newB": 0,
+      "newC": 0,
+      "cum_A": 1151,
+      "cum_B": 121,
+      "cum_C": 0,
+      "samples": [
+        "合う.合",
+        "～合う.合",
+        "遭う.遭",
+        "赤ちゃん.赤",
+        "上る.上"
+      ]
+    },
+    {
+      "id": "B8",
+      "type": "B",
+      "description": "送假名=く/ぐ/す/む/ぶ/ぬ→动词",
+      "predicts": "verb",
+      "cost": 1,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 55,
+      "newC": 0,
+      "cum_A": 1151,
+      "cum_B": 176,
+      "cum_C": 0,
+      "samples": [
+        "空く.空",
+        "編む.編",
+        "表す.表",
+        "致す.致",
+        "頂く.頂"
+      ]
+    },
+    {
+      "id": "B10",
+      "type": "B",
+      "description": "送假名=り/き/み/し/ち/け→名词(连用)",
+      "predicts": "noun_renyo",
+      "cost": 1,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 41,
+      "newC": 0,
+      "cum_A": 1151,
+      "cum_B": 217,
+      "cum_C": 0,
+      "samples": [
+        "辺り.辺",
+        "編み物.編",
+        "行き先（ゆきさき）.行",
+        "羨ましい.羨",
+        "大通り.通"
+      ]
+    },
+    {
+      "id": "B6",
+      "type": "B",
+      "description": "送假名=い→形容词",
+      "predicts": "adjective",
+      "cost": 1,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 21,
+      "newC": 0,
+      "cum_A": 1151,
+      "cum_B": 238,
+      "cum_C": 0,
+      "samples": [
+        "浅い.浅",
+        "淡い.淡",
+        "偉い.偉",
+        "お祝い.祝",
+        "思い出す.思"
+      ]
+    },
+    {
+      "id": "A2",
+      "type": "A",
+      "description": "单汉字无假名→训读",
+      "predicts": "kun",
+      "cost": 1,
+      "accuracy": 0.6458333333333334,
+      "newA": 93,
+      "newB": 0,
+      "newC": 0,
+      "cum_A": 1244,
+      "cum_B": 238,
+      "cum_C": 0,
+      "samples": [
+        "愛.愛",
+        "間.間",
+        "味.味",
+        "油.油",
+        "alcohol（荷）.荷"
+      ]
+    },
+    {
+      "id": "B7",
+      "type": "B",
+      "description": "送假名=しい→形容词",
+      "predicts": "adjective",
+      "cost": 1,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 10,
+      "newC": 0,
+      "cum_A": 1244,
+      "cum_B": 248,
+      "cum_C": 0,
+      "samples": [
+        "美しい.美",
+        "嬉しい.嬉",
+        "悲しい.悲",
+        "厳しい.厳",
+        "親しい.親"
+      ]
+    },
+    {
+      "id": "A5",
+      "type": "A",
+      "description": "抽象/数量/情感域→音读",
+      "predicts": "on",
+      "cost": 1,
+      "accuracy": 0.5771186440677966,
+      "newA": 42,
+      "newB": 0,
+      "newC": 0,
+      "cum_A": 1286,
+      "cum_B": 248,
+      "cum_C": 0,
+      "samples": [
+        "愛.愛",
+        "愛犬.愛",
+        "愛犬.犬",
+        "挨拶.挨",
+        "挨拶.拶"
+      ]
+    },
+    {
+      "id": "A4",
+      "type": "A",
+      "description": "身体/自然/人域→训读",
+      "predicts": "kun",
+      "cost": 1,
+      "accuracy": 0.3665874901029295,
+      "newA": 102,
+      "newB": 0,
+      "newC": 0,
+      "cum_A": 1388,
+      "cum_B": 248,
+      "cum_C": 0,
+      "samples": [
+        "愛.愛",
+        "愛犬.愛",
+        "愛犬.犬",
+        "挨拶.挨",
+        "挨拶.拶"
+      ]
+    },
+    {
+      "id": "C_c_卸",
+      "type": "C",
+      "description": "部件「卸」→词干「お」",
+      "predicts": "お",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 5,
+      "cum_A": 1388,
+      "cum_B": 248,
+      "cum_C": 5,
+      "samples": [
+        "御出でになる.御",
+        "御数.御",
+        "御嬢さん.御",
+        "御宅.御",
+        "御釣り.御"
+      ]
+    },
+    {
+      "id": "B2",
+      "type": "B",
+      "description": "部首=手扌言足→动词",
+      "predicts": "verb",
+      "cost": 1,
+      "accuracy": 0.5614035087719298,
+      "newA": 0,
+      "newB": 6,
+      "newC": 0,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 5,
+      "samples": [
+        "挙げる.挙",
+        "謝る.謝",
+        "行き先（ゆきさき）.行",
+        "行ける.行",
+        "打つ.打"
+      ]
+    },
+    {
+      "id": "C_s_body+person+speech_alone",
+      "type": "C",
+      "description": "语义域[body,person,speech]+位置[alone]→词干「そ」",
+      "predicts": "そ",
+      "cost": 4,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 6,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 11,
+      "samples": [
+        "其々.其",
+        "其れで.其",
+        "其れとも.其",
+        "其れなのに.其",
+        "其れなら.其"
+      ]
+    },
+    {
+      "id": "C_s_action+body+number+quality_start",
+      "type": "C",
+      "description": "语义域[action,body,number,quality]+位置[start]→词干「おお」",
+      "predicts": "おお",
+      "cost": 4,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 5,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 16,
+      "samples": [
+        "大雨.大",
+        "大型.大",
+        "大声.大",
+        "大通り.大",
+        "大幅.大"
+      ]
+    },
+    {
+      "id": "C_c_牜",
+      "type": "C",
+      "description": "部件「牜」→词干「もの」",
+      "predicts": "もの",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 3,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 19,
+      "samples": [
+        "着物.物",
+        "着る物.物",
+        "品物.物"
+      ]
+    },
+    {
+      "id": "C_c_巴",
+      "type": "C",
+      "description": "部件「巴」→词干「いろ」",
+      "predicts": "いろ",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 3,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 22,
+      "samples": [
+        "金色.色",
+        "銀色.色",
+        "茶色い.色"
+      ]
+    },
+    {
+      "id": "C_c_責",
+      "type": "C",
+      "description": "部件「責」→词干「つ」",
+      "predicts": "つ",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 3,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 25,
+      "samples": [
+        "漬物.漬",
+        "漬ける.漬",
+        "積もり.積"
+      ]
+    },
+    {
+      "id": "C_c_呈",
+      "type": "C",
+      "description": "部件「呈」→词干「ほど」",
+      "predicts": "ほど",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 3,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 28,
+      "samples": [
+        "其れ程.程",
+        "成程.程",
+        "程.程"
+      ]
+    },
+    {
+      "id": "C_o_わり",
+      "type": "C",
+      "description": "送假名「わり」→词干「か」",
+      "predicts": "か",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 3,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 31,
+      "samples": [
+        "代わり.代",
+        "変わり.変",
+        "代わりに.代"
+      ]
+    },
+    {
+      "id": "C_s_action+body+emotion+quality_start",
+      "type": "C",
+      "description": "语义域[action,body,emotion,quality]+位置[start]→词干「ひ」",
+      "predicts": "ひ",
+      "cost": 4,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 3,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 34,
+      "samples": [
+        "引き出し.引",
+        "引越し.引",
+        "引っ越す.引"
+      ]
+    },
+    {
+      "id": "C_s_action+body+emotion+number+person+quality_start",
+      "type": "C",
+      "description": "语义域[action,body,emotion,number,person,quality]+位置[start]→词干「め」",
+      "predicts": "め",
+      "cost": 4,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 3,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 37,
+      "samples": [
+        "目薬.目",
+        "目に入る.目",
+        "目の前.目"
+      ]
+    },
+    {
+      "id": "C_c_具",
+      "type": "C",
+      "description": "部件「具」→词干「ま」",
+      "predicts": "ま",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 2,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 39,
+      "samples": [
+        "真面目.真",
+        "真ん中.真"
+      ]
+    },
+    {
+      "id": "C_c_刖",
+      "type": "C",
+      "description": "部件「刖」→词干「まえ」",
+      "predicts": "まえ",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 2,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 41,
+      "samples": [
+        "お前.前",
+        "前に.前"
+      ]
+    },
+    {
+      "id": "C_c_則",
+      "type": "C",
+      "description": "部件「則」→词干「がわ」",
+      "predicts": "がわ",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 2,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 43,
+      "samples": [
+        "内側.側",
+        "両側.側"
+      ]
+    },
+    {
+      "id": "C_c_民",
+      "type": "C",
+      "description": "部件「民」→词干「ねむ」",
+      "predicts": "ねむ",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 2,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 45,
+      "samples": [
+        "眠い.眠",
+        "眠る.眠"
+      ]
+    },
+    {
+      "id": "C_c_洛",
+      "type": "C",
+      "description": "部件「洛」→词干「お」",
+      "predicts": "お",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 2,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 47,
+      "samples": [
+        "落ちる.落",
+        "落とす.落"
+      ]
+    },
+    {
+      "id": "C_c_門",
+      "type": "C",
+      "description": "部件「門」→词干「き」",
+      "predicts": "き",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 2,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 49,
+      "samples": [
+        "聞かせる.聞",
+        "聞こえる.聞"
+      ]
+    },
+    {
+      "id": "C_c_寺",
+      "type": "C",
+      "description": "部件「寺」→词干「も」",
+      "predicts": "も",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 2,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 51,
+      "samples": [
+        "金持ち.持",
+        "気持ち.持"
+      ]
+    },
+    {
+      "id": "C_o_らせ",
+      "type": "C",
+      "description": "送假名「らせ」→词干「し」",
+      "predicts": "し",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 2,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 53,
+      "samples": [
+        "知らせ.知",
+        "知らせる.知"
+      ]
+    },
+    {
+      "id": "C_s_action+body+emotion+number_start",
+      "type": "C",
+      "description": "语义域[action,body,emotion,number]+位置[start]→词干「て」",
+      "predicts": "て",
+      "cost": 4,
+      "accuracy": 0.8,
+      "newA": 0,
+      "newB": 0,
+      "newC": 4,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 57,
+      "samples": [
+        "手軽.手",
+        "手伝い.手",
+        "手伝う.手",
+        "手袋.手",
+        "指輪.指"
+      ]
+    },
+    {
+      "id": "C_c_禾",
+      "type": "C",
+      "description": "部件「禾」→词干「の」",
+      "predicts": "の",
+      "cost": 3,
+      "accuracy": 0.75,
+      "newA": 0,
+      "newB": 0,
+      "newC": 3,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 60,
+      "samples": [
+        "誘う.誘",
+        "乗り換え.乗",
+        "乗り換える.乗",
+        "乗り物.乗"
+      ]
+    },
+    {
+      "id": "C_s_action+body+nature+number+person+speech_start",
+      "type": "C",
+      "description": "语义域[action,body,nature,number,person,speech]+位置[start]→词干「くち」",
+      "predicts": "くち",
+      "cost": 4,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 2,
+      "cum_A": 1388,
+      "cum_B": 254,
+      "cum_C": 62,
+      "samples": [
+        "口喧嘩.口",
+        "口に合う.口"
+      ]
+    },
+    {
+      "id": "A9",
+      "type": "A",
+      "description": "入声字+无假名→音读",
+      "predicts": "on",
+      "cost": 1,
+      "accuracy": 0.7383720930232558,
+      "newA": 3,
+      "newB": 0,
+      "newC": 0,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 62,
+      "samples": [
+        "愛.愛",
+        "愛犬.愛",
+        "挨拶.挨",
+        "挨拶.拶",
+        "青空.青"
+      ]
+    },
+    {
+      "id": "C_c_爫",
+      "type": "C",
+      "description": "部件「爫」→词干「う」",
+      "predicts": "う",
+      "cost": 3,
+      "accuracy": 0.6,
+      "newA": 0,
+      "newB": 0,
+      "newC": 3,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 65,
+      "samples": [
+        "受付.受",
+        "受付係.受",
+        "受ける.受",
+        "揺らす.揺",
+        "揺れる.揺"
+      ]
+    },
+    {
+      "id": "C_c_丬",
+      "type": "C",
+      "description": "部件「丬」→词干「ね」",
+      "predicts": "ね",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 1,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 66,
+      "samples": [
+        "寝坊.寝"
+      ]
+    },
+    {
+      "id": "C_c_刑",
+      "type": "C",
+      "description": "部件「刑」→词干「がた」",
+      "predicts": "がた",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 1,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 67,
+      "samples": [
+        "大型.型"
+      ]
+    },
+    {
+      "id": "C_c_劵",
+      "type": "C",
+      "description": "部件「劵」→词干「か」",
+      "predicts": "か",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 1,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 68,
+      "samples": [
+        "勝つ.勝"
+      ]
+    },
+    {
+      "id": "C_c_沓",
+      "type": "C",
+      "description": "部件「沓」→词干「ふ」",
+      "predicts": "ふ",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 1,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 69,
+      "samples": [
+        "踏む.踏"
+      ]
+    },
+    {
+      "id": "C_c_奇",
+      "type": "C",
+      "description": "部件「奇」→词干「よ」",
+      "predicts": "よ",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 1,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 70,
+      "samples": [
+        "寄る.寄"
+      ]
+    },
+    {
+      "id": "C_o_の",
+      "type": "C",
+      "description": "送假名「の」→词干「その」",
+      "predicts": "その",
+      "cost": 3,
+      "accuracy": 0.5,
+      "newA": 0,
+      "newB": 0,
+      "newC": 4,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 74,
+      "samples": [
+        "髪の毛.髪",
+        "木の葉.木",
+        "其の頃.其",
+        "其の為.其",
+        "其の外/其の他.其"
+      ]
+    },
+    {
+      "id": "C_o_ず",
+      "type": "C",
+      "description": "送假名「ず」→词干「かなら」",
+      "predicts": "かなら",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 1,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 75,
+      "samples": [
+        "必ず.必"
+      ]
+    },
+    {
+      "id": "C_o_も",
+      "type": "C",
+      "description": "送假名「も」→词干「もっと」",
+      "predicts": "もっと",
+      "cost": 3,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 1,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 76,
+      "samples": [
+        "最も.最"
+      ]
+    },
+    {
+      "id": "C_s_action+body+emotion+person_start",
+      "type": "C",
+      "description": "语义域[action,body,emotion,person]+位置[start]→词干「み」",
+      "predicts": "み",
+      "cost": 4,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 1,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 77,
+      "samples": [
+        "見込む.見"
+      ]
+    },
+    {
+      "id": "C_s_action+body+emotion+nature+speech_start",
+      "type": "C",
+      "description": "语义域[action,body,emotion,nature,speech]+位置[start]→词干「おも」",
+      "predicts": "おも",
+      "cost": 4,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 1,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 78,
+      "samples": [
+        "思い出す.思"
+      ]
+    },
+    {
+      "id": "C_s_action+emotion+number+person_start",
+      "type": "C",
+      "description": "语义域[action,emotion,number,person]+位置[start]→词干「ね」",
+      "predicts": "ね",
+      "cost": 4,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 1,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 79,
+      "samples": [
+        "値段.値"
+      ]
+    },
+    {
+      "id": "C_s_emotion+number+person+quality+speech_alone",
+      "type": "C",
+      "description": "语义域[emotion,number,person,quality,speech]+位置[alone]→词干「なん」",
+      "predicts": "なん",
+      "cost": 4,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 1,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 80,
+      "samples": [
+        "何で.何"
+      ]
+    },
+    {
+      "id": "C_s_body+number+quality_start",
+      "type": "C",
+      "description": "语义域[body,number,quality]+位置[start]→词干「こ」",
+      "predicts": "こ",
+      "cost": 4,
+      "accuracy": 1.0,
+      "newA": 0,
+      "newB": 0,
+      "newC": 1,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 81,
+      "samples": [
+        "小鳥.小"
+      ]
+    },
+    {
+      "id": "C_s_action+number_start",
+      "type": "C",
+      "description": "语义域[action,number]+位置[start]→词干「で」",
+      "predicts": "で",
+      "cost": 4,
+      "accuracy": 0.6666666666666666,
+      "newA": 0,
+      "newB": 0,
+      "newC": 2,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 83,
+      "samples": [
+        "出会う.出",
+        "出入り口.出",
+        "割合.割"
+      ]
+    },
+    {
+      "id": "C_c_至",
+      "type": "C",
+      "description": "部件「至」→词干「や」",
+      "predicts": "や",
+      "cost": 3,
+      "accuracy": 0.5,
+      "newA": 0,
+      "newB": 0,
+      "newC": 2,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 85,
+      "samples": [
+        "酒屋.屋",
+        "倒す.倒",
+        "倒れる.倒",
+        "床屋.屋"
+      ]
+    },
+    {
+      "id": "C_c_昜",
+      "type": "C",
+      "description": "部件「昜」→词干「ば」",
+      "predicts": "ば",
+      "cost": 3,
+      "accuracy": 0.5,
+      "newA": 0,
+      "newB": 0,
+      "newC": 2,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 87,
+      "samples": [
+        "傷.傷",
+        "場合.場",
+        "場所.場",
+        "湯.湯"
+      ]
+    },
+    {
+      "id": "C_c_甘",
+      "type": "C",
+      "description": "部件「甘」→词干「そ」",
+      "predicts": "そ",
+      "cost": 3,
+      "accuracy": 0.5833333333333334,
+      "newA": 0,
+      "newB": 0,
+      "newC": 1,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 88,
+      "samples": [
+        "其処で.其",
+        "其の頃.其",
+        "其の為.其",
+        "其の外/其の他.其",
+        "其の儘.其"
+      ]
+    },
+    {
+      "id": "C_c_代",
+      "type": "C",
+      "description": "部件「代」→词干「か」",
+      "predicts": "か",
+      "cost": 3,
+      "accuracy": 0.5,
+      "newA": 0,
+      "newB": 0,
+      "newC": 1,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 89,
+      "samples": [
+        "貸出し.貸",
+        "手袋.袋"
+      ]
+    },
+    {
+      "id": "C_o_りる",
+      "type": "C",
+      "description": "送假名「りる」→词干「お」",
+      "predicts": "お",
+      "cost": 3,
+      "accuracy": 0.5,
+      "newA": 0,
+      "newB": 0,
+      "newC": 1,
+      "cum_A": 1391,
+      "cum_B": 254,
+      "cum_C": 90,
+      "samples": [
+        "下りる.下",
+        "足りる.足"
+      ]
+    },
+    {
+      "id": "B1",
+      "type": "B",
+      "description": "部首=魚虫木竹鳥→名词",
+      "predicts": "noun",
+      "cost": 1,
+      "accuracy": 0.15555555555555556,
+      "newA": 0,
+      "newB": 4,
+      "newC": 0,
+      "cum_A": 1391,
+      "cum_B": 258,
+      "cum_C": 90,
+      "samples": [
+        "植える.植",
+        "移す.移",
+        "移る.移",
+        "植わる.植",
+        "枝.枝"
+      ]
+    },
+    {
+      "id": "B3",
+      "type": "B",
+      "description": "部首=日月山石雨→名词",
+      "predicts": "noun",
+      "cost": 1,
+      "accuracy": 0.16666666666666666,
+      "newA": 0,
+      "newB": 3,
+      "newC": 0,
+      "cum_A": 1391,
+      "cum_B": 261,
+      "cum_C": 90,
+      "samples": [
+        "石.石",
+        "旨/巧/美味/甘/上手い.旨",
+        "大雨.雨",
+        "硬い.硬",
+        "岸.岸"
+      ]
+    },
+    {
+      "id": "C_s_action+body+number+person_start",
+      "type": "C",
+      "description": "语义域[action,body,number,person]+位置[start]→词干「と」",
+      "predicts": "と",
+      "cost": 4,
+      "accuracy": 0.5,
+      "newA": 0,
+      "newB": 0,
+      "newC": 1,
+      "cum_A": 1391,
+      "cum_B": 261,
+      "cum_C": 91,
+      "samples": [
+        "取り替える.取",
+        "歯医者.歯"
+      ]
+    },
+    {
+      "id": "C_c_害",
+      "type": "C",
+      "description": "部件「害」→词干「わり」",
+      "predicts": "わり",
+      "cost": 3,
+      "accuracy": 0.3333333333333333,
+      "newA": 0,
+      "newB": 0,
+      "newC": 1,
+      "cum_A": 1391,
+      "cum_B": 261,
+      "cum_C": 92,
+      "samples": [
+        "割合.割",
+        "割る.割",
+        "割れる.割"
+      ]
+    },
+    {
+      "id": "C_c_韋",
+      "type": "C",
+      "description": "部件「韋」→词干「ちが」",
+      "predicts": "ちが",
+      "cost": 3,
+      "accuracy": 0.25,
+      "newA": 0,
+      "newB": 0,
+      "newC": 1,
+      "cum_A": 1391,
+      "cum_B": 261,
+      "cum_C": 93,
+      "samples": [
+        "偉い.偉",
+        "違い.違",
+        "間違う.違",
+        "間違える.違"
+      ]
+    },
+    {
+      "id": "C_o_げる",
+      "type": "C",
+      "description": "送假名「げる」→词干「あ」",
+      "predicts": "あ",
+      "cost": 3,
+      "accuracy": 0.25,
+      "newA": 0,
+      "newB": 0,
+      "newC": 1,
+      "cum_A": 1391,
+      "cum_B": 261,
+      "cum_C": 94,
+      "samples": [
+        "挙げる.挙",
+        "下げる.下",
+        "投げる.投",
+        "逃げる.逃"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Claude config (personal)
+.claude/
+
+# macOS
+.DS_Store
+
+# Large intermediate JSONs (regeneratable from source scripts)
+output/kun_network_data.json
+output/derive_db.json
+output/kun_v8_prediction_engine.json
+output/kun_tiered_rules.json
+output/kun_v6_rules.json
+output/kun_v6_frequency.json
+output/kun_v6_frequency_v2.json
+output/gold_panning_v3_results.json
+output/kunyomi_exhaustive_v4.json
+gold_panning_v3_results.json
+gold_panning_results.json
+gold_panning_v2_results.json
+kunyomi_exhaustive_v4.json
+
+# Image build artifacts (keep PNGs only)
+docs/images/*/capture.py
+docs/images/*/*.html
