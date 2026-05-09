@@ -1,3 +1,5 @@
+# 训读终结
+
 <p align="center">
   <samp>訓</samp> <samp>読</samp> <samp>終</samp> <samp>結</samp>
 </p>
@@ -8,8 +10,6 @@
   <img src="https://img.shields.io/badge/coverage-N5%E2%80%93N1-c5602e?style=flat-square" alt="N5-N1">
   <img src="https://img.shields.io/badge/python-3.9%2B-d4954a?style=flat-square" alt="Python 3.9+">
 </p>
-
-# 训读终结
 
 <p align="center">
   <b>JLPT 的训读，四分之三不需要记。</b>

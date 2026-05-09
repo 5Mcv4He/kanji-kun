@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>漢字記憶網絡 · 音读有规律 · 训读有网络</title>
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'PingFang SC', 'Noto Serif SC', system-ui, sans-serif;
+    background: #080808; color: #e0e0e0;
+    min-height: 100dvh; display: flex; flex-direction: column;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ── Header ── */
+  .header {
+    padding: 12px 16px 0; position: sticky; top: 0; z-index: 10;
+    background: #080808;
+  }
+  .header-row {
+    display: flex; gap: 8px; max-width: 500px; margin: 0 auto; align-items: center;
+  }
+  .search-wrap { position: relative; }
+  .search-wrap input {
+    width: 100%; padding: 11px 38px 11px 14px;
+    font-size: 17px; font-family: inherit;
+    background: #0f0e0c; border: 1px solid #1a1816; border-radius: 10px;
+    color: #e0d8cc; outline: none;
+    transition: border-color 0.2s;
+  }
+  .search-wrap input:focus { border-color: #c5602e; }
+  .search-wrap input::placeholder { color: #2a2a2a; font-size: 15px; }
+  .search-clear {
+    position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+    width: 24px; height: 24px; border-radius: 12px; border: none;
+    background: #1a1816; color: #555; font-size: 13px;
+    cursor: pointer; display: none; align-items: center; justify-content: center;
+  }
+  .search-clear.visible { display: flex; }
+  .search-trigger {
+    flex-shrink: 0; width: 42px; height: 42px; border-radius: 10px;
+    border: 1px solid #1a1816; background: #0f0e0c; color: #777;
+    font-size: 18px; cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .search-trigger:hover { border-color: #2a2826; color: #c5602e; }
+  .search-wrap .input-area { display: none; }
+  .search-wrap.expanded .input-area { display: block; }
+  .search-wrap.expanded .search-trigger { display: none; }
+  .search-wrap.expanded { flex: 1; }
+  .btn-random {
+    flex-shrink: 0; width: 42px; height: 42px; border-radius: 10px;
+    border: 1px solid #1a1816; background: #0f0e0c; color: #777;
+    font-size: 18px; cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .btn-random:hover { border-color: #2a2826; color: #c5602e; }
+
+  /* Autocomplete */
+  .autocomplete {
+    position: absolute; top: 100%; left: 0; right: 0; margin-top: 4px;
+    background: #0f0e0c; border: 1px solid #1a1816; border-radius: 10px;
+    max-height: 240px; overflow-y: auto; display: none; z-index: 20;
+  }
+  .autocomplete.active { display: block; }
+  .ac-item {
+    padding: 10px 14px; cursor: pointer; display: flex; align-items: center; gap: 10px;
+    border-bottom: 1px solid #141210; font-size: 15px;
+  }
+  .ac-item:last-child { border-bottom: none; }
+  .ac-item:hover, .ac-item.focus { background: #141210; }
+  .ac-kanji { font-size: 22px; font-weight: 900; width: 32px; color: #e0d8cc; }
+  .ac-kun { color: #c5602e; font-size: 13px; font-family: 'Menlo', monospace; }
+  .ac-lv { margin-left: auto; font-size: 10px; color: #444; background: #141210; padding: 2px 7px; border-radius: 8px; }
+
+  /* ── Main ── */
+  .main {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    padding: 8px 16px 40px; overflow-y: auto;
+  }
+
+  /* ── Empty State ── */
+  .empty {
+    text-align: center; padding: 100px 20px 0;
+  }
+  .empty-icon { font-size: 72px; opacity: 0.08; margin-bottom: 20px; }
+  .empty-title { font-size: 18px; font-weight: 500; color: #555; }
+  .empty-sub { font-size: 13px; color: #333; margin-top: 8px; line-height: 1.6; }
+  .empty-sub em { color: #c5602e; font-style: normal; cursor: pointer; }
+
+  /* ── Result ── */
+  .result { width: 100%; max-width: 500px; display: none; }
+  .result.active { display: block; }
+
+  /* ── Target card ── */
+  .target {
+    text-align: center; padding: 40px 20px 32px;
+  }
+  .target-kanji {
+    font-size: 120px; font-weight: 900; line-height: 1;
+    color: #f5f0e8; letter-spacing: 0.04em;
+  }
+  .target-pinyin {
+    font-size: 13px; color: #3a3a3a; margin-top: 8px;
+    font-family: 'Menlo', monospace; letter-spacing: 0.06em;
+  }
+  .target-meta {
+    margin-top: 14px; display: flex; gap: 10px; justify-content: center;
+    align-items: center; flex-wrap: wrap;
+  }
+  .target-reading {
+    font-size: 18px; font-family: 'Menlo', 'Monaco', monospace; color: #c5602e;
+    letter-spacing: 0.02em;
+  }
+  .target-on {
+    font-size: 14px; font-family: 'Menlo', 'Monaco', monospace; color: #555;
+    letter-spacing: 0.02em;
+  }
+  .target-lv {
+    font-size: 10px; font-weight: 500; padding: 3px 10px; border-radius: 9px;
+    background: #141210; color: #666;
+  }
+  .lv-badge {
+    font-size: 9px; font-weight: 600; padding: 2px 8px; border-radius: 9px;
+    display: inline-block;
+  }
+  .lv-badge.N5 { background: #3a4a2a; color: #7a9a5a; }
+  .lv-badge.N4 { background: #2a3a3a; color: #5a9a9a; }
+  .lv-badge.N3 { background: #3a3a1a; color: #9a9a4a; }
+  .lv-badge.N2 { background: #3a2a1a; color: #c5854a; }
+  .lv-badge.N1 { background: #3a1a1a; color: #c54a4a; }
+  .target-hub {
+    font-size: 10px; color: #c5602e; padding: 3px 10px;
+    background: rgba(197,96,46,0.06); border: 1px solid rgba(197,96,46,0.12);
+    border-radius: 8px; display: inline-flex; align-items: center; gap: 4px;
+  }
+  .target-hub strong { color: #c5602e; font-weight: 700; }
+  .target-words {
+    margin-top: 18px; display: flex; gap: 5px; flex-wrap: wrap; justify-content: center;
+  }
+  .word-pill {
+    font-size: 10px; padding: 4px 9px; border-radius: 5px;
+    background: #141210; color: #777; border: 1px solid #1c1a18;
+    font-family: 'Menlo', 'Monaco', monospace;
+    display: inline-flex; align-items: center; gap: 3px;
+    letter-spacing: 0.01em;
+  }
+  .word-pill .wk { color: #bbb; font-family: 'PingFang SC', 'Noto Serif SC', sans-serif; font-size: 11px; }
+  .word-pill .wl { font-size: 8px; color: #444; }
+  .word-pill.kun { border-color: #241d16; }
+  .word-pill.on { border-color: #151515; opacity: 0.55; }
+
+  /* Network summary bridge */
+  .target-summary {
+    margin-top: 16px; display: flex; gap: 12px; justify-content: center;
+    flex-wrap: wrap; font-size: 10px; color: #3a3a3a;
+  }
+  .target-summary .ns-item em {
+    color: #c5602e; font-style: normal; font-weight: 700;
+    font-family: 'Menlo', 'Monaco', monospace; font-size: 11px;
+  }
+
+  /* ── Connection groups ── */
+  .groups { display: flex; flex-direction: column; gap: 8px; }
+
+  .group {
+    background: #0f0e0c; border-radius: 10px; overflow: hidden;
+    border: 1px solid #1a1816;
+  }
+  .group-head {
+    display: flex; align-items: center; gap: 8px;
+    padding: 12px 14px; cursor: pointer; user-select: none;
+    transition: background 0.15s;
+  }
+  .group-head:hover { background: #131210; }
+  .group-dot { width: 6px; height: 6px; border-radius: 3px; flex-shrink: 0; opacity: 0.6; }
+  .group-dot.sf { background: #c5602e; opacity: 1; }
+  .group-dot.tr { background: #4a8e7a; }
+  .group-dot.cp { background: #6a6a6a; }
+  .group-dot.rb { background: #5a5a5a; }
+  .group-dot.sc { background: #5a5a6e; }
+  .group-dot.so { background: #4a5a7e; }
+  .group-dot.on { background: #3a5070; }
+  .group-icon { font-size: 13px; flex-shrink: 0; opacity: 0.45; width: 20px; text-align: center; }
+  .group-label { font-size: 13px; font-weight: 500; flex: 1; color: #888; }
+  .group-count { font-size: 11px; color: #3a3a3a; font-family: 'Menlo', monospace; }
+  .group-arrow {
+    font-size: 10px; color: #2a2a2a; transition: transform 0.2s;
+    font-family: 'Menlo', monospace;
+  }
+  .group.open .group-arrow { transform: rotate(180deg); }
+
+  .group-body { display: none; padding: 0 14px 12px; }
+  .group.open .group-body { display: block; }
+
+  /* Core groups — more prominent */
+  .group:not(.ref) .group-label { font-weight: 700; color: #aaa; }
+  .group:not(.ref) .group-dot { opacity: 0.85; }
+
+  /* Reference groups — dimmed, secondary */
+  .group.ref { opacity: 0.45; background: #0c0b0a; }
+  .group.ref .group-dot { opacity: 0.25; }
+  .group.ref .group-label { font-weight: 500; color: #555; }
+
+  /* Group subtitle */
+  .group-sub { font-size: 10px; color: #3a3a3a; font-weight: 400; }
+  .group:not(.ref) .group-sub { color: #4a4a4a; }
+
+  /* Network position card */
+  .netpos {
+    margin-top: 4px; padding: 14px;
+    background: #0f0e0c; border: 1px solid #1c1a18; border-radius: 10px;
+  }
+  .netpos-head {
+    display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px;
+  }
+  .netpos-tier { font-size: 13px; font-weight: 700; color: #c5602e; }
+  .netpos-rank { font-size: 10px; color: #555; font-family: 'Menlo', monospace; }
+  .netpos-blurb {
+    font-size: 11px; color: #555; line-height: 1.55; margin-bottom: 10px;
+  }
+  .netpos-blurb em { color: #c5602e; font-style: normal; font-weight: 700; }
+  .netpos-dirs { display: flex; flex-direction: column; gap: 5px; }
+  .netpos-dir { display: flex; align-items: center; gap: 8px; }
+  .nd-label {
+    font-size: 11px; color: #c5602e; flex-shrink: 0; width: 48px; text-align: right;
+    font-family: 'Menlo', monospace; font-weight: 700;
+  }
+  .nd-chips { display: flex; gap: 4px; flex: 1; align-items: center; flex-wrap: wrap; }
+  .nd-chips .chip { padding: 3px 7px; }
+  .nd-chips .chip .ck { font-size: 14px; }
+  .nd-chips .chip .cr { font-size: 9px; }
+  .nd-chips .chip .cl { font-size: 8px; }
+  .nd-more { font-size: 10px; color: #3a3a3a; margin-left: 4px; }
+  .nd-expand {
+    cursor: pointer; transition: color 0.15s;
+  }
+  .nd-expand:hover { color: #c5602e; }
+  .nd-all { display: none; flex-wrap: wrap; gap: 4px; padding-top: 4px; padding-left: 56px; }
+  .nd-all .chip { padding: 3px 7px; }
+  .nd-all .chip .ck { font-size: 14px; }
+  .nd-all .chip .cr { font-size: 9px; }
+  .nd-all .chip .cl { font-size: 8px; }
+
+  /* Section dividers */
+  .section-divider {
+    display: flex; align-items: center; gap: 10px;
+    padding: 22px 2px 8px;
+  }
+  .section-divider:first-child { padding-top: 4px; }
+  .sd-line { flex: 1; height: 1px; background: #1c1a18; }
+  .sd-label { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; white-space: nowrap; color: #555; }
+  .sd-label em { color: #c5602e; font-style: normal; font-weight: 700; }
+  .sd-tagline { font-size: 9px; color: #333; margin-left: 2px; }
+
+  /* Collapsed preview */
+  .group-preview { padding: 0 14px 10px; display: block; }
+  .group.open .group-preview { display: none; }
+  .expand-hint {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 10px; color: #3a3a3a; cursor: pointer;
+    padding: 3px 8px; border-radius: 4px; margin-top: 4px;
+    transition: color 0.15s;
+  }
+  .expand-hint:hover { color: #777; }
+
+  /* Stem family sub-groups */
+  .stem-family { margin-bottom: 9px; }
+  .stem-family:last-child { margin-bottom: 0; }
+  .stem-label {
+    font-size: 11px; color: #3a3a3a; margin-bottom: 5px;
+    font-family: 'Menlo', 'Monaco', monospace; display: flex; align-items: center; gap: 6px;
+  }
+  .stem-label em { color: #c5602e; font-style: normal; font-weight: 700; font-size: 15px; }
+  .stem-examples {
+    font-size: 10px; color: #2a2a2a; margin-left: auto;
+    font-family: 'Menlo', monospace; max-width: 180px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+
+  /* Kanji chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 5px 10px; background: #141210; border-radius: 6px;
+    cursor: pointer; transition: all 0.12s;
+    border: 1px solid #1c1a18;
+  }
+  .chip:hover, .chip:active { background: #1a1816; border-color: #2a2826; }
+  .chip .ck { font-size: 16px; font-weight: 900; color: #e0d8cc; }
+  .chip .cr { font-size: 10px; font-family: 'Menlo', monospace; color: #777; }
+  .chip .cl {
+    font-size: 8px; padding: 1px 5px; border-radius: 4px; font-weight: 600;
+  }
+  .chip .cl.N5 { background: #3a4a2a; color: #7a9a5a; }
+  .chip .cl.N4 { background: #2a3a3a; color: #5a9a9a; }
+  .chip .cl.N3 { background: #3a3a1a; color: #9a9a4a; }
+  .chip .cl.N2 { background: #3a2a1a; color: #c5854a; }
+  .chip .cl.N1 { background: #3a1a1a; color: #c54a4a; }
+
+  /* Transitivity cards */
+  .tr-card {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; margin-bottom: 5px;
+    background: #141210; border-radius: 6px;
+    border-left: 2px solid #4a8e7a;
+  }
+  .tr-card:last-child { margin-bottom: 0; }
+  .tr-pattern-label {
+    font-size: 11px; font-family: 'Menlo', monospace; color: #6a8e82;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .tr-pair {
+    display: flex; align-items: center; gap: 5px; flex: 1; flex-wrap: wrap;
+  }
+  .tr-verb {
+    font-size: 12px; padding: 3px 7px; background: #0f0e0c; border-radius: 4px;
+    font-family: 'Menlo', monospace;
+  }
+  .tr-verb.auto { color: #888; }
+  .tr-verb.trans { color: #c5602e; }
+  .tr-verb small { font-size: 9px; opacity: 0.45; margin-left: 2px; }
+  .tr-card .tr-arrow { color: #4a8e7a; font-weight: 900; font-size: 12px; }
+
+  /* On-yomi rule cards — the HEADLINE of 音读 section */
+  .rule-card {
+    background: #141210; border-radius: 8px; padding: 12px 14px;
+    margin-bottom: 8px; border-left: 3px solid #c5602e;
+  }
+  .rule-card:last-child { margin-bottom: 0; }
+  .rule-head {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 8px;
+  }
+  .rule-icon { font-size: 15px; color: #c5602e; flex-shrink: 0; }
+  .rule-text { font-size: 14px; color: #ccc; font-weight: 700; line-height: 1.4; }
+  .rule-text em { color: #c5602e; font-style: normal; }
+  .rule-text strong { color: #d4954a; }
+  .rule-conf { font-size: 9px; padding: 2px 7px; border-radius: 3px; font-weight: 700; flex-shrink: 0; }
+  .rule-conf.sure { background: #0d1a10; color: #4a9d5e; }
+  .rule-conf.maybe { background: #1a150f; color: #a08030; }
+  .rule-body { display: flex; align-items: flex-start; gap: 8px; }
+  .rule-evidence-label { font-size: 9px; color: #2a2a2a; flex-shrink: 0; padding-top: 5px; }
+  .rule-evidence-chips { display: flex; flex-wrap: wrap; gap: 4px; flex: 1; }
+
+  .no-connections {
+    padding: 32px 14px; font-size: 13px; color: #2a2a2a; text-align: center;
+  }
+
+  /* ── Level filter ── */
+  .level-filter {
+    display: flex; gap: 3px; align-items: center; flex-shrink: 0;
+  }
+  .lv-btn {
+    padding: 5px 8px; border-radius: 5px; border: 1px solid #1a1816;
+    background: #0c0b0a; color: #555; font-size: 9px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s; font-family: inherit;
+    white-space: nowrap;
+  }
+  .lv-btn:hover { border-color: #2a2826; color: #888; }
+  .lv-btn.active { background: #c5602e; color: #080808; border-color: #c5602e; font-weight: 700; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #1a1816; border-radius: 2px; }
+
+  @media (min-width: 600px) {
+    .target-kanji { font-size: 160px; }
+    .main { padding-top: 16px; }
+    .target { padding: 48px 20px 40px; }
+  }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-row">
+      <div class="search-wrap" id="searchWrap">
+        <button class="search-trigger" id="searchTrigger" aria-label="搜索" title="搜索">⌕</button>
+        <div class="input-area">
+          <input type="text" id="search" placeholder="输入汉字或读音…" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+          <button class="search-clear" id="clearBtn" aria-label="清除">×</button>
+          <div class="autocomplete" id="ac"></div>
+        </div>
+      </div>
+      <button class="btn-random" id="randomBtn" aria-label="随机" title="随机一个汉字">⟳</button>
+      <div class="level-filter" id="levelFilter" style="display:none">
+        <button class="lv-btn active" data-lv="all">全</button>
+        <button class="lv-btn" data-lv="N5">N5</button>
+        <button class="lv-btn" data-lv="N4">N4</button>
+        <button class="lv-btn" data-lv="N3">N3</button>
+        <button class="lv-btn" data-lv="N2">N2</button>
+        <button class="lv-btn" data-lv="N1">N1</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="main" id="main">
+    <div class="empty" id="empty">
+      <div class="empty-icon">漢</div>
+      <div class="empty-title">正在加载数据…</div>
+    </div>
+
+    <div class="result" id="result">
+      <div class="target" id="target"></div>
+      <div class="groups" id="groups"></div>
+      <div class="hub-strip" id="hubStrip"></div>
+    </div>
+  </div>
+
+<script>
+// ── Load data ──
+let DATA = null;
+const $search = document.getElementById('search');
+const $clear = document.getElementById('clearBtn');
+const $ac = document.getElementById('ac');
+const $empty = document.getElementById('empty');
+const $result = document.getElementById('result');
+const $target = document.getElementById('target');
+const $groups = document.getElementById('groups');
+const $hubStrip = document.getElementById('hubStrip');
+const $levelFilter = document.getElementById('levelFilter');
+const $randomBtn = document.getElementById('randomBtn');
+const $searchWrap = document.getElementById('searchWrap');
+const $searchTrigger = document.getElementById('searchTrigger');
+let currentKanji = null;
+let currentLevel = 'all';
+let acIndex = -1;
+
+fetch('output/kanji_app_data.json')
+  .then(r => r.json())
+  .then(d => {
+    DATA = d;
+    console.log(`Loaded ${d.total} kanji, ${d.hubs.length} hubs`);
+    $empty.querySelector('.empty-title').textContent = '点击随机，探索汉字关联';
+    let sub = $empty.querySelector('.empty-sub');
+    if (!sub) { sub = document.createElement('div'); sub.className = 'empty-sub'; $empty.appendChild(sub); }
+    sub.innerHTML = '音读<em>有规律</em>可推导 · 训读<em>有网络</em>可关联';
+    pickRandom();
+  })
+  .catch(e => {
+    console.error('Load failed', e);
+    $empty.querySelector('.empty-title').textContent = '数据加载失败';
+  });
+
+// ── Random kanji ──
+function pickRandom() {
+  if (!DATA || !DATA.hubs || DATA.hubs.length === 0) return;
+  const k = DATA.hubs[Math.floor(Math.random() * DATA.hubs.length)];
+  selectKanji(k);
+}
+
+$randomBtn.addEventListener('click', pickRandom);
+
+// ── Search trigger: expand on click ──
+$searchTrigger.addEventListener('click', () => {
+  $searchWrap.classList.add('expanded');
+  if (currentKanji) $search.value = currentKanji;
+  $search.focus();
+});
+
+// Collapse search when clicking outside
+document.addEventListener('click', (e) => {
+  if (!$searchWrap.classList.contains('expanded')) return;
+  if (!$searchWrap.contains(e.target)) {
+    collapseSearch();
+  }
+});
+
+function collapseSearch() {
+  $searchWrap.classList.remove('expanded');
+  $search.value = '';
+  $clear.classList.remove('visible');
+  $ac.classList.remove('active');
+}
+
+// ── Search / Autocomplete ──
+$search.addEventListener('input', () => {
+  const q = $search.value.trim();
+  $clear.classList.toggle('visible', q.length > 0);
+  acIndex = -1;
+  if (!q || !DATA) { $ac.classList.remove('active'); return; }
+
+  const matches = [];
+  for (const k of Object.keys(DATA.kanji)) {
+    if (k === q) { matches.unshift(k); continue; }
+    if (k.includes(q)) matches.push(k);
+    else {
+      const d = DATA.kanji[k];
+      if (d.ku && d.ku.includes(q)) matches.push(k);
+      else if (d.on && d.on.includes(q)) matches.push(k);
+      else if (d.py && d.py.includes(q.toLowerCase())) matches.push(k);
+    }
+  }
+  const top = matches.slice(0, 20);
+  if (top.length === 0) { $ac.classList.remove('active'); return; }
+
+  $ac.innerHTML = top.map((k, i) => {
+    const d = DATA.kanji[k];
+    const lvAll = d.lv_all ? d.lv_all.map(l => `<span class="lv-badge ${l}">${l}</span>`).join('') : `<span class="lv-badge ${d.lv}">${d.lv}</span>`;
+    return `<div class="ac-item" data-idx="${i}" data-kanji="${k}">
+      <span class="ac-kanji">${k}</span>
+      <span class="ac-kun">${d.ku || ''}</span>
+      <span class="ac-lv">${lvAll}</span>
+    </div>`;
+  }).join('');
+  $ac.classList.add('active');
+});
+
+$search.addEventListener('keydown', (e) => {
+  const items = $ac.querySelectorAll('.ac-item');
+  if (e.key === 'ArrowDown') { e.preventDefault(); acIndex = Math.min(acIndex + 1, items.length - 1); updateAcFocus(items); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); acIndex = Math.max(acIndex - 1, -1); updateAcFocus(items); }
+  else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (acIndex >= 0 && items[acIndex]) {
+      selectKanji(items[acIndex].dataset.kanji);
+    } else {
+      const q = $search.value.trim();
+      if (q && DATA && DATA.kanji[q]) selectKanji(q);
+    }
+  }
+  else if (e.key === 'Escape') {
+    if ($search.value.trim() === '') collapseSearch();
+    else clearAll();
+  }
+});
+
+$ac.addEventListener('click', (e) => {
+  const item = e.target.closest('.ac-item');
+  if (item) selectKanji(item.dataset.kanji);
+});
+
+document.addEventListener('click', (e) => {
+  if (!$search.contains(e.target) && !$ac.contains(e.target)) $ac.classList.remove('active');
+});
+
+$clear.addEventListener('click', clearAll);
+
+function updateAcFocus(items) {
+  items.forEach((el, i) => el.classList.toggle('focus', i === acIndex));
+  if (acIndex >= 0 && items[acIndex]) items[acIndex].scrollIntoView({ block: 'nearest' });
+}
+
+// ── Level helpers ──
+// ── Word pills ──
+function wordPills(ws, maxShow) {
+  if (!ws || ws.length === 0) return '';
+  const show = maxShow ? ws.slice(0, maxShow) : ws;
+  return show.map(w => {
+    const cls = w.t === 'kun' ? 'kun' : 'on';
+    const lv = w.l || '';
+    return `<span class="word-pill ${cls}"><span class="wk">${w.w}</span>${w.k}${lv ? `<span class="wl">${lv}</span>` : ''}</span>`;
+  }).join('');
+}
+
+function networkSummary(d) {
+  const parts = [];
+  const sf = d.sf || [];
+  if (sf.length > 0) {
+    const total = sf.reduce((s, f) => s + (f.ks || []).length, 0);
+    parts.push(`<span class="ns-item"><em>${sf.length}</em> 读 · <em>${total}</em> 同读字</span>`);
+  }
+  const tr = d.tr || [];
+  if (tr.length > 0) parts.push(`<span class="ns-item"><em>${tr.length}</em> 自他对</span>`);
+  const onRules = d.on_rules || [];
+  if (onRules.length > 0) parts.push(`<span class="ns-item"><em>${onRules.length}</em> 音读规则</span>`);
+  const cp = d.cp || [];
+  if (cp.length > 0) parts.push(`<span class="ns-item"><em>${cp.length}</em> 共现字</span>`);
+  if (parts.length === 0) return '';
+  return `<div class="target-summary">${parts.join('')}</div>`;
+}
+
+// ── Select & Display ──
+function selectKanji(k) {
+  if (!DATA || !DATA.kanji[k]) return;
+  currentKanji = k;
+  currentLevel = 'all';
+  $search.value = k;
+  $ac.classList.remove('active');
+  acIndex = -1;
+
+  collapseSearch();
+  renderKanji(k);
+  $empty.style.display = 'none';
+  $result.classList.add('active');
+  $levelFilter.style.display = 'flex';
+  $levelFilter.querySelectorAll('.lv-btn').forEach(b => b.classList.toggle('active', b.dataset.lv === 'all'));
+  const main = document.querySelector('.main');
+  if (main) main.scrollTo({top: 0, behavior: 'instant'});
+  window.scrollTo({top: 0, behavior: 'instant'});
+  if (location.hash !== '#' + k) history.pushState(null, '', '#' + k);
+}
+
+function renderKanji(k) {
+  const d = DATA.kanji[k];
+  if (!d) return;
+
+  // ── Target card ──
+  const lvAll = d.lv_all ? d.lv_all.map(l => `<span class="lv-badge ${l}">${l}</span>`).join('') : `<span class="lv-badge ${d.lv}">${d.lv}</span>`;
+  const py = d.py || '';
+  const onReadings = d.on_all ? d.on_all.join(' · ') : (d.on || '');
+  // Collect all kun readings from stem families
+  const allKun = new Set();
+  if (d.ku) allKun.add(d.ku);
+  if (d.sf) d.sf.forEach(f => allKun.add(f.st));
+  const kunReadings = [...allKun].join(' · ');
+
+  const hubHtml = d.hub >= 200
+    ? `<span class="target-hub" title="枢纽字：连接${d.hub}个汉字">⬡ ${d.hub}</span>`
+    : '';
+
+  $target.innerHTML = `
+    <div class="target-kanji">${k}</div>
+    ${py ? `<div class="target-pinyin">${py}</div>` : ''}
+    <div class="target-meta">
+      ${kunReadings ? `<span class="target-reading">${kunReadings}</span>` : ''}
+      ${onReadings ? `<span class="target-on">${onReadings}</span>` : ''}
+      <span class="target-lv">${lvAll}</span>
+      ${hubHtml}
+    </div>
+    <div class="target-words">${wordPills(d.ws, 8)}</div>
+    ${networkSummary(d)}
+  `;
+
+  // Level filter
+  const filterByLevel = (items) => {
+    if (currentLevel === 'all') return items;
+    if (Array.isArray(items)) {
+      return items.filter(ik => {
+        const lk = DATA.lookup[ik] || DATA.kanji[ik];
+        if (!lk) return false;
+        const lvAll = (DATA.kanji[ik] && DATA.kanji[ik].lv_all) || (lk.lv ? [lk.lv] : []);
+        return lvAll.includes(currentLevel);
+      });
+    }
+    return [];
+  };
+
+  // ── Gather & filter data ──
+  const sf = d.sf || [];
+  const tr = d.tr || [];
+  const cpAll = d.cp || [];
+  const rbAll = d.rb || [];
+  const scAll = d.sc || [];
+  const onRules = d.on_rules || [];
+  const so = d.so || [];
+
+  const filteredSf = sf.map(f => ({
+    st: f.st, ks: filterByLevel(f.ks || []), ex: f.ex || []
+  })).filter(f => f.ks.length > 0);
+  const filteredCp = filterByLevel(cpAll);
+  const filteredRb = filterByLevel(rbAll);
+  const filteredSc = filterByLevel(scAll);
+  const filteredSo = so.map(g => ({
+    r: g.r, ks: filterByLevel(g.ks || [])
+  })).filter(g => g.ks.length > 0);
+
+  // Scores for dynamic section ordering — core groups drive, reference groups add small bonus
+  const sfKsTotal = filteredSf.reduce((s, f) => s + f.ks.length, 0);
+  const kunScore = filteredSf.length * 3 + sfKsTotal * 0.3 + tr.length * 2 + filteredCp.length * 0.2;
+  const structScore = filteredSc.length * 0.15 + filteredRb.length * 0.15;
+  const onScore = onRules.length * 3;
+
+  const PREVIEW = 5;
+  const sections = [];
+
+  // ═══ Kun section ═══
+  let kunHtml = '';
+
+  // SF group
+  if (filteredSf.length > 0) {
+    const totalKs = filteredSf.reduce((s, f) => s + f.ks.length, 0);
+    kunHtml += `<div class="group open">`;
+    kunHtml += `<div class="group-head" onclick="toggleGroup(this)">
+      <span class="group-dot sf"></span><span class="group-icon">訓</span>
+      <span class="group-label">同读法<span class="group-sub"> · 一个读音对应多个汉字</span></span>
+      <span class="group-count">${filteredSf.length}读 · ${totalKs}字</span>
+      <span class="group-arrow">▾</span>
+    </div>`;
+    kunHtml += `<div class="group-preview">`;
+    for (const fam of filteredSf) {
+      const previewKs = fam.ks.slice(0, PREVIEW);
+      const hasMore = fam.ks.length > PREVIEW;
+      kunHtml += `<div class="stem-family">
+        <div class="stem-label">读 <em>${fam.st}</em></div>
+        <div class="chips">${previewKs.map(ik => kanjiChip(ik, fam.st)).join('')}${hasMore ? `<span class="expand-hint" onclick="event.stopPropagation();this.closest('.group').classList.add('open')">+${fam.ks.length - PREVIEW}字 ▸</span>` : ''}</div>
+      </div>`;
+    }
+    kunHtml += `</div>`;
+    kunHtml += `<div class="group-body">`;
+    for (const fam of filteredSf) {
+      kunHtml += `<div class="stem-family">
+        <div class="stem-label">读 <em>${fam.st}</em></div>
+        <div class="chips">${fam.ks.map(ik => kanjiChip(ik, fam.st)).join('')}</div>
+      </div>`;
+    }
+    kunHtml += `</div></div>`;
+  }
+
+  // TR group
+  if (tr.length > 0) {
+    kunHtml += `<div class="group open">`;
+    kunHtml += `<div class="group-head" onclick="toggleGroup(this)">
+      <span class="group-dot tr"></span><span class="group-icon">⇄</span>
+      <span class="group-label">自他对应<span class="group-sub"> · 固定语法模式</span></span>
+      <span class="group-count">${tr.length}组</span>
+      <span class="group-arrow">▾</span>
+    </div>`;
+    kunHtml += `<div class="group-body">`;
+    for (const t of tr) {
+      const autoForms = (t.a || []).map(x => `<span class="tr-verb auto">${x.w}<small>${x.k}</small></span>`).join('');
+      const transForms = (t.t || []).map(x => `<span class="tr-verb trans">${x.w}<small>${x.k}</small></span>`).join('');
+      kunHtml += `<div class="tr-card">
+        <span class="tr-pattern-label">${t.p}</span>
+        <div class="tr-pair">${autoForms}<span class="tr-arrow">⇄</span>${transForms}</div>
+      </div>`;
+    }
+    kunHtml += `</div></div>`;
+  }
+
+  // CP group
+  if (filteredCp.length > 0) {
+    const previewCp = filteredCp.slice(0, PREVIEW);
+    const hasMore = filteredCp.length > PREVIEW;
+    kunHtml += `<div class="group ref">`;
+    kunHtml += `<div class="group-head" onclick="toggleGroup(this)">
+      <span class="group-dot cp"></span><span class="group-icon">◎</span>
+      <span class="group-label">复合词共现</span>
+      <span class="group-count">${filteredCp.length}字</span>
+      <span class="group-arrow">▾</span>
+    </div>`;
+    kunHtml += `<div class="group-preview"><div class="chips">${previewCp.map(ik => kanjiChip(ik)).join('')}${hasMore ? `<span class="expand-hint" onclick="event.stopPropagation();this.closest('.group').classList.add('open')">+${filteredCp.length - PREVIEW}字 ▸</span>` : ''}</div></div>`;
+    kunHtml += `<div class="group-body"><div class="chips">${filteredCp.map(ik => kanjiChip(ik)).join('')}</div></div></div>`;
+  }
+
+  // Netpos card — plain language meaning + index kanji per direction
+  if (DATA.hubs) {
+    const rank = DATA.hubs.indexOf(k);
+    const pct = rank >= 0 ? ((rank + 1) / DATA.hubs.length * 100) : null;
+
+    let tier = '';
+    if (pct !== null) {
+      if (pct <= 1) tier = '核心枢纽';
+      else if (pct <= 5) tier = '主要枢纽';
+      else if (pct <= 10) tier = '重要节点';
+      else if (pct <= 25) tier = '活跃节点';
+      else tier = '网络节点';
+    }
+
+    const pctText = pct !== null ? (pct < 0.5 ? '不到 1%' : `前 ${Math.round(pct)}%`) : '';
+
+    const blurbs = {
+      '核心枢纽': '它是最重要的锚点字之一，先学它，再学周围的字会省力很多。',
+      '主要枢纽': '它是重要的桥梁字，学它可以连带认识一批相关的汉字。',
+      '重要节点': '它在网络中有比较强的连接性，值得重点关注。',
+      '活跃节点': '它有一定数量的关联汉字，可以利用这些连接辅助记忆。',
+      '网络节点': '它在网络中的连接较少，适合独立记忆。',
+    };
+
+    // Build direction lanes — show top 2 index kanji per direction
+    let dirs = '';
+    if (filteredSf.length > 0) {
+      const LV = { 'N5': 0, 'N4': 1, 'N3': 2, 'N2': 3, 'N1': 4 };
+      for (const f of filteredSf) {
+        const members = (f.ks || []).filter(ik => ik !== k);
+        if (members.length === 0) continue;
+        // Sort by JLPT level — most familiar first as index/landmark kanji
+        members.sort((a, b) => {
+          const la = DATA.kanji[a] ? (LV[DATA.kanji[a].lv] ?? 99) : 99;
+          const lb = DATA.kanji[b] ? (LV[DATA.kanji[b].lv] ?? 99) : 99;
+          if (la !== lb) return la - lb;
+          const ha = DATA.kanji[a] ? (DATA.kanji[a].hub || 0) : 0;
+          const hb = DATA.kanji[b] ? (DATA.kanji[b].hub || 0) : 0;
+          return hb - ha;
+        });
+        const idx = members.slice(0, 2);
+        const allChips = members.map(ik => kanjiChip(ik, f.st)).join('');
+        dirs += `<div class="netpos-dir">
+          <span class="nd-label">${f.st}</span>
+          <div class="nd-chips">${idx.map(ik => kanjiChip(ik, f.st)).join('')}<span class="nd-more nd-expand" onclick="event.stopPropagation();const p=this.closest('.netpos-dir');const all=p.querySelector('.nd-all');const show=all.style.display==='none';all.style.display=show?'flex':'none';this.innerHTML=show?'收起 ▴':'…等 ${members.length} 字 ▸'">…等 ${members.length} 字 ▸</span></div>
+          <div class="nd-all" style="display:none">${allChips}</div>
+        </div>`;
+      }
+    }
+
+    let trLine = '';
+    if (tr.length > 0) {
+      trLine = `<div class="netpos-dir">
+        <span class="nd-label" style="color:#4a8e7a">自他对</span>
+        <div class="nd-chips"><span class="nd-more" style="color:#6a8e82">${tr.length} 组动词对应</span></div>
+      </div>`;
+    }
+
+    kunHtml += `<div class="netpos">
+      <div class="netpos-head">
+        <span class="netpos-tier">⬡ ${tier}</span>
+        <span class="netpos-rank">${pctText} · ${d.hub || 0} 连接</span>
+      </div>
+      <div class="netpos-blurb">${blurbs[tier] || ''}${dirs || trLine ? ' 从它出发：' : ''}</div>
+      ${dirs ? `<div class="netpos-dirs">${dirs}</div>` : ''}
+      ${trLine}
+    </div>`;
+  }
+
+  if (kunHtml) {
+    sections.push({ key: 'kun', score: kunScore, label: '训读', tagline: '关联网络', html: kunHtml });
+  }
+
+  // ═══ Structure section ═══
+  let structHtml = '';
+
+  if (filteredRb.length > 0) {
+    const rbRd = d.rb_rd || d.rd || '';
+    const previewRb = filteredRb.slice(0, PREVIEW);
+    const hasMore = filteredRb.length > PREVIEW;
+    structHtml += `<div class="group ref">`;
+    structHtml += `<div class="group-head" onclick="toggleGroup(this)">
+      <span class="group-dot rb"></span><span class="group-icon">⺈</span>
+      <span class="group-label">同部首${rbRd ? ' · ' + rbRd : ''}</span>
+      <span class="group-count">${filteredRb.length}字</span>
+      <span class="group-arrow">▾</span>
+    </div>`;
+    structHtml += `<div class="group-preview"><div class="chips">${previewRb.map(ik => kanjiChip(ik)).join('')}${hasMore ? `<span class="expand-hint" onclick="event.stopPropagation();this.closest('.group').classList.add('open')">+${filteredRb.length - PREVIEW}字 ▸</span>` : ''}</div></div>`;
+    structHtml += `<div class="group-body"><div class="chips">${filteredRb.map(ik => kanjiChip(ik)).join('')}</div></div></div>`;
+  }
+
+  if (filteredSc.length > 0) {
+    const previewSc = filteredSc.slice(0, PREVIEW);
+    const hasMore = filteredSc.length > PREVIEW;
+    structHtml += `<div class="group ref">`;
+    structHtml += `<div class="group-head" onclick="toggleGroup(this)">
+      <span class="group-dot sc"></span><span class="group-icon">⿰</span>
+      <span class="group-label">同部件</span>
+      <span class="group-count">${filteredSc.length}字</span>
+      <span class="group-arrow">▾</span>
+    </div>`;
+    structHtml += `<div class="group-preview"><div class="chips">${previewSc.map(ik => kanjiChip(ik)).join('')}${hasMore ? `<span class="expand-hint" onclick="event.stopPropagation();this.closest('.group').classList.add('open')">+${filteredSc.length - PREVIEW}字 ▸</span>` : ''}</div></div>`;
+    structHtml += `<div class="group-body"><div class="chips">${filteredSc.map(ik => kanjiChip(ik)).join('')}</div></div></div>`;
+  }
+
+  if (structHtml) {
+    sections.push({ key: 'structure', score: structScore, label: '结构', tagline: '部件部首', html: structHtml });
+  }
+
+  // ═══ On section ═══
+  let onHtml = '';
+
+  if (onRules.length > 0) {
+    onHtml += `<div class="group open">`;
+    onHtml += `<div class="group-head" onclick="toggleGroup(this)">
+      <span class="group-dot on"></span><span class="group-icon">¶</span>
+      <span class="group-label">音读推导</span>
+      <span class="group-count">${onRules.length}条规则</span>
+      <span class="group-arrow">▾</span>
+    </div>`;
+    onHtml += `<div class="group-body">`;
+    for (const r of onRules) {
+      const confCls = r.c === '确定' ? 'sure' : 'maybe';
+      const ruleHtml = r.t
+        .replace(/「(.+?)」/g, '「<em>$1</em>」')
+        .replace(/→ (.+)/, '→ <strong>$1</strong>');
+
+      // Evidence: find kanji sharing this on-yomi AND matching the rule condition
+      const soEntry = (d.so || []).find(g => g.r === r.o);
+      const allMates = soEntry ? (soEntry.ks || []).filter(ik => ik !== k) : [];
+      let ruleMates = [];
+      const pinyinMatch = r.t.match(/拼音\s+(\w+)\+(\w+)/);
+      if (pinyinMatch) {
+        const initial = pinyinMatch[1].toLowerCase();
+        const final = pinyinMatch[2].toLowerCase();
+        ruleMates = allMates.filter(ik => {
+          const kd = DATA.kanji[ik];
+          if (!kd) return false;
+          const py = (kd.py || '').toLowerCase();
+          return py.startsWith(initial) && py.endsWith(final);
+        });
+      } else {
+        const compMatch = r.t.match(/声符「(.+?)」/);
+        if (compMatch) {
+          const scKanji = d.sc || [];
+          ruleMates = allMates.filter(ik => scKanji.includes(ik));
+        } else {
+          ruleMates = allMates;
+        }
+      }
+
+      onHtml += `<div class="rule-card">
+        <div class="rule-head">
+          <span class="rule-icon">¶</span>
+          <span class="rule-text">${ruleHtml}</span>
+          <span class="rule-conf ${confCls}">${r.c}</span>
+        </div>`;
+      if (ruleMates.length > 0) {
+        const RPREV = 6;
+        const preview = ruleMates.slice(0, RPREV);
+        const extra = ruleMates.slice(RPREV);
+        onHtml += `<div class="rule-body">
+          <span class="rule-evidence-label">同${r.o}</span>
+          <div class="rule-evidence-chips">${preview.map(ik => kanjiChip(ik, r.o)).join('')}</div>`;
+        if (extra.length > 0) {
+          onHtml += `<div class="rule-extra" style="display:none"><div class="rule-evidence-chips" style="margin-top:4px">${extra.map(ik => kanjiChip(ik, r.o)).join('')}</div></div>`;
+          onHtml += `<span class="expand-hint" onclick="event.stopPropagation();const ex=this.parentElement.querySelector('.rule-extra');const show=ex.style.display==='none';ex.style.display=show?'block':'none';this.textContent=show?'收起 ▴':'+${extra.length}字 ▸'">+${extra.length}字 ▸</span>`;
+        }
+        onHtml += `</div>`;
+      }
+      onHtml += `</div>`;
+    }
+    onHtml += `</div></div>`;
+  }
+
+  // SO group
+  if (filteredSo.length > 0) {
+    const totalKs = filteredSo.reduce((s, g) => s + g.ks.length, 0);
+    onHtml += `<div class="group ref">`;
+    onHtml += `<div class="group-head" onclick="toggleGroup(this)">
+      <span class="group-dot so"></span><span class="group-icon">♫</span>
+      <span class="group-label">同音读</span>
+      <span class="group-count">${filteredSo.length}读 · ${totalKs}字</span>
+      <span class="group-arrow">▾</span>
+    </div>`;
+    onHtml += `<div class="group-preview">`;
+    for (const g of filteredSo) {
+      const previewKs = g.ks.slice(0, PREVIEW);
+      const hasMore = g.ks.length > PREVIEW;
+      onHtml += `<div class="stem-family">
+        <div class="stem-label">读 <em>${g.r}</em></div>
+        <div class="chips">${previewKs.map(ik => kanjiChip(ik, g.r)).join('')}${hasMore ? `<span class="expand-hint" onclick="event.stopPropagation();this.closest('.group').classList.add('open')">+${g.ks.length - PREVIEW}字 ▸</span>` : ''}</div>
+      </div>`;
+    }
+    onHtml += `</div>`;
+    onHtml += `<div class="group-body">`;
+    for (const g of filteredSo) {
+      onHtml += `<div class="stem-family">
+        <div class="stem-label">读 <em>${g.r}</em></div>
+        <div class="chips">${g.ks.map(ik => kanjiChip(ik, g.r)).join('')}</div>
+      </div>`;
+    }
+    onHtml += `</div></div>`;
+  }
+
+  if (onHtml) {
+    sections.push({ key: 'on', score: onScore, label: '音读', tagline: '规律推导', html: onHtml });
+  }
+
+  // Sort by score descending — richer sections come first
+  sections.sort((a, b) => b.score - a.score);
+
+  // Assemble with section dividers between blocks
+  let html = '';
+  for (const sec of sections) {
+    html += `<div class="section-divider">
+      <span class="sd-line"></span>
+      <span class="sd-label"><em>${sec.label}</em> · ${sec.tagline}</span>
+      <span class="sd-line"></span>
+    </div>`;
+    html += sec.html;
+  }
+
+  if (html === '') {
+    html = `<div class="no-connections">暂无连接数据</div>`;
+  }
+
+  $groups.innerHTML = html;
+  $hubStrip.innerHTML = '';
+}
+
+function kanjiChip(ik, reading) {
+  const lk = DATA.lookup[ik] || DATA.kanji[ik];
+  if (!lk) return `<span class="chip"><span class="ck">${ik}</span></span>`;
+  const ku = reading || lk.ku || '';
+  const lv = lk.lv || '';
+  return `<span class="chip" onclick="event.stopPropagation();selectKanji('${ik}')" title="${ku}">
+    <span class="ck">${ik}</span>
+    ${ku ? `<span class="cr">${ku}</span>` : ''}
+    ${lv ? `<span class="cl ${lv}">${lv}</span>` : ''}
+  </span>`;
+}
+
+// ── Level filter ──
+$levelFilter.addEventListener('click', (e) => {
+  const btn = e.target.closest('.lv-btn');
+  if (!btn) return;
+  $levelFilter.querySelectorAll('.lv-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentLevel = btn.dataset.lv;
+  if (currentKanji) renderKanji(currentKanji);
+});
+
+// ── Group toggle ──
+function toggleGroup(head) {
+  head.parentElement.classList.toggle('open');
+}
+
+// ── Clear ──
+function clearAll() {
+  currentKanji = null;
+  $search.value = '';
+  $ac.classList.remove('active');
+  acIndex = -1;
+  $empty.style.display = '';
+  $result.classList.remove('active');
+  $levelFilter.style.display = 'none';
+  $target.innerHTML = '';
+  $groups.innerHTML = '';
+  if (location.hash) history.pushState(null, '', location.pathname);
+}
+
+// ── URL hash routing ──
+window.addEventListener('hashchange', () => {
+  const k = decodeURIComponent(location.hash.slice(1));
+  if (k && DATA && DATA.kanji[k]) selectKanji(k);
+});
+
+if (location.hash) {
+  const k = decodeURIComponent(location.hash.slice(1));
+  const check = setInterval(() => {
+    if (DATA && DATA.kanji[k]) { clearInterval(check); selectKanji(k); }
+  }, 50);
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (e.key === '/' && document.activeElement !== $search && !e.target.closest('input,textarea')) {
+    e.preventDefault(); $search.focus(); $search.select();
+  }
+  if (e.key === 'r' && e.ctrlKey) {
+    e.preventDefault(); pickRandom();
+  }
+});
+</script>
+</body>
+</html>
